@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Drop Interaction</title>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            overflow: hidden; /* 스크롤바 생김 방지 */
+            margin: 0;
+            height: 100vh;
+        }
+    </style>
+</head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Drop Follower</title>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            overflow: hidden;
+            margin: 0;
+            height: 100vh;
+            cursor: none; /* 실제 마우스 커서를 숨기면 물방울 느낌이 더 살아요 */
+        }
+
+        /* 마우스에 항상 붙어있는 큰 물방울 스타일 */
+        #cursor-drop {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-color: #3498db;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 999;
+            transition: transform 0.1s ease-out; /* 부드러운 움직임 */
+        }
+    </style>
+</head>
+<body>
+
+    <div id="cursor-drop"></div>
+
+    <script>
+        const cursorDrop = document.getElementById('cursor-drop');
+        let lastTime = 0;
+
+        document.addEventListener('mousemove', function(event) {
+            const currentTime = Date.now();
+            const x = event.clientX;
+            const y = event.clientY;
+
+            // 1. 메인 물방울이 마우스를 따라오게 함
+            // 물방울의 중심이 커서에 오도록 크기의 절반(20px)만큼 뺍니다.
+            cursorDrop.style.left = `${x - 20}px`;
+            cursorDrop.style.top = `${y - 20}px`;
+
+            // 2. 자취를 따라 떨어지는 작은 물방울 생성 빈도 조절
+            if (currentTime - lastTime < 150) return; // 0.15초마다 하나씩
+            lastTime = currentTime;
+
+            createFallingDrop(x, y);
+        });
+
+        function createFallingDrop(x, y) {
+            const drop = document.createElement('div');
+            
+            // 아기 물방울 스타일
+            drop.style.position = 'absolute';
+            drop.style.width = '25px';
+            drop.style.height = '25px';
+            drop.style.backgroundColor = '#5dade2'; // 약간 더 연한 파랑
+            drop.style.borderRadius = '50%';
+            drop.style.pointerEvents = 'none';
+            
+            // 메인 물방울 위치에서 시작
+            drop.style.left = `${x - 12}px`;
+            drop.style.top = `${y - 12}px`;
+            
+            drop.dataset.y = y - 12;
+            drop.dataset.speed = Math.random() * 4 + 3; // 떨어지는 속도
+            drop.style.opacity = '1';
+
+            document.body.appendChild(drop);
+
+            // 1.5초 뒤 제거
+            setTimeout(() => {
+                drop.remove();
+            }, 1500);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            // 'cursor-drop' 아이디를 가진 메인 물방울을 제외한 나머지 div들만 선택
+            let fallingDrops = document.querySelectorAll('div:not(#cursor-drop)');
+            
+            fallingDrops.forEach(function(drop) {
+                let currentY = parseFloat(drop.dataset.y);
+                let speed = parseFloat(drop.dataset.speed);
+                
+                currentY += speed;
+                drop.dataset.y = currentY;
+                drop.style.top = `${currentY}px`;
+                
+                // 떨어지면서 작아지고 투명해지는 효과 추가
+                let currentOpacity = parseFloat(drop.style.opacity);
+                drop.style.opacity = currentOpacity - 0.015;
+                
+                // 크기도 살짝 줄여주면 더 자연스러워요
+                let currentWidth = parseFloat(drop.style.width);
+                if (currentWidth > 5) {
+                    drop.style.width = `${currentWidth - 0.2}px`;
+                    drop.style.height = `${currentWidth - 0.2}px`;
+                }
+            });
+        }
+        
+        animate();
+    </script>
+</body>
+</html>
+</html>
+</html>
+
